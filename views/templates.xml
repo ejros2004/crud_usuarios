@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <template id="pagina_principal" name="Página Principal - CRUD Usuarios">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <h1>Gestión de Usuarios</h1>
+                <p class="lead">Sistema CRUD completo para administrar usuarios</p>
+
+                <div class="mb-4">
+                    <a href="/reporte_usuarios" class="btn btn-info">Ver Reporte</a>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCrearUsuario">
+                        Nuevo Usuario
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Lista de Usuarios Registrados</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px;">Foto</th>
+                                    <th>Nombre</th>
+                                    <th>Email</th>
+                                    <th>Teléfono</th>
+                                    <th>Fecha Registro</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="usuarios" t-as="usuario">
+                                    <td>
+                                        <t t-if="usuario.foto">
+                                            <img t-att-src="'data:image/png;base64,' + usuario.foto" 
+                                                 style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #dee2e6;"
+                                                 class="user-avatar"/>
+                                        </t>
+                                        <t t-else="">
+                                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #6c757d; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px;">
+                                                <i class="fa fa-user"></i>
+                                            </div>
+                                        </t>
+                                    </td>
+                                    <td><t t-esc="usuario.nombre"/></td>
+                                    <td><t t-esc="usuario.email"/></td>
+                                    <td>
+                                        <t t-if="usuario.telefono">
+                                            <t t-esc="usuario.telefono"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="text-muted">No especificado</span>
+                                        </t>
+                                    </td>
+                                    <td><t t-esc="usuario.fecha_registro"/></td>
+                                    <td>
+                                        <t t-if="usuario.activo">
+                                            <span class="badge bg-success">Activo</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="badge bg-warning">Inactivo</span>
+                                        </t>
+                                    </td>
+                                    <td>
+                                        <a t-att-href="'/editar_usuario/' + str(usuario.id)" class="btn btn-warning btn-sm">Editar</a>
+                                        <button type="button" class="btn btn-danger btn-sm" t-att-data-usuario-id="usuario.id" onclick="confirmarEliminacion(this)">
+                                            Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr t-if="not usuarios">
+                                    <td colspan="7" class="text-center text-muted">
+                                        No hay usuarios registrados
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal para crear nuevo usuario -->
+            <div class="modal fade" id="modalCrearUsuario" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Agregar Nuevo Usuario</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form action="/crear_usuario" method="post" enctype="multipart/form-data">
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label">Foto (Opcional)</label>
+                                            <input type="file" name="foto" class="form-control" accept="image/*"/>
+                                            <small class="text-muted">Formatos: JPG, PNG, GIF</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Nombre Completo *</label>
+                                            <input type="text" name="nombre" class="form-control" required="true" placeholder="Ingrese nombre completo"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Email *</label>
+                                            <input type="email" name="email" class="form-control" required="true" placeholder="ejemplo@correo.com"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Teléfono *</label>
+                                            <input type="tel" name="telefono" class="form-control" required="true" placeholder="+1234567890"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Dirección *</label>
+                                    <textarea name="direccion" class="form-control" rows="3" required="true" placeholder="Ingrese dirección completa"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-success">Crear Usuario</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                function confirmarEliminacion(boton) {
+                    const usuarioId = boton.getAttribute('data-usuario-id');
+                    if (confirm('¿Está seguro de que desea eliminar este usuario? Esta acción no se puede deshacer.')) {
+                        window.location.href = '/eliminar_usuario/' + usuarioId;
+                    }
+                }
+            </script>
+
+            <style>
+                .user-avatar {
+                    width: 40px !important;
+                    height: 40px !important;
+                    border-radius: 50% !important;
+                    object-fit: cover !important;
+                    border: 1px solid #dee2e6 !important;
+                }
+            </style>
+        </t>
+    </template>
+
+    <!-- Template: Formulario de edición de usuarios -->
+    <template id="formulario_edicion" name="Formulario de Edición">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-10">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Editar Usuario</h5>
+                            </div>
+                            <div class="card-body">
+                                <form t-att-action="'/actualizar_usuario/' + str(usuario.id)" method="post" enctype="multipart/form-data">
+                                    <div class="row">
+                                        <div class="col-md-4 text-center">
+                                            <div class="mb-3">
+                                                <t t-if="usuario.foto">
+                                                    <img t-att-src="'data:image/png;base64,' + usuario.foto" 
+                                                         style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #dee2e6;"
+                                                         class="mb-2 profile-avatar"/>
+                                                    <br/>
+                                                    <div class="form-check">
+                                                        <input type="checkbox" name="eliminar_foto" class="form-check-input" id="eliminar_foto"/>
+                                                        <label class="form-check-label text-danger" for="eliminar_foto">
+                                                            <i class="fa fa-trash"></i> Eliminar foto actual
+                                                        </label>
+                                                    </div>
+                                                </t>
+                                                <t t-else="">
+                                                    <div style="width: 100px; height: 100px; border-radius: 50%; background: #6c757d; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto; color: white;">
+                                                        <i class="fa fa-user fa-2x"></i>
+                                                    </div>
+                                                </t>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Cambiar Foto</label>
+                                                <input type="file" name="foto" class="form-control" accept="image/*"/>
+                                                <small class="text-muted">Formatos: JPG, PNG, GIF</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Nombre Completo *</label>
+                                                        <input type="text" name="nombre" class="form-control" t-att-value="usuario.nombre" required="true"/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Email *</label>
+                                                        <input type="email" name="email" class="form-control" t-att-value="usuario.email" required="true"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Teléfono *</label>
+                                                        <input type="tel" name="telefono" class="form-control" t-att-value="usuario.telefono" required="true"/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <div class="form-check">
+                                                            <input type="checkbox" name="activo" class="form-check-input" id="activo" t-att-checked="usuario.activo"/>
+                                                            <label class="form-check-label" for="activo">
+                                                                Usuario Activo
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Dirección *</label>
+                                        <textarea name="direccion" class="form-control" rows="3" required="true"><t t-esc="usuario.direccion or ''"/></textarea>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <button type="submit" class="btn btn-success">Guardar Cambios</button>
+                                        <a href="/usuarios" class="btn btn-secondary">Cancelar</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                .profile-avatar {
+                    width: 100px !important;
+                    height: 100px !important;
+                    border-radius: 50% !important;
+                    object-fit: cover !important;
+                    border: 2px solid #dee2e6 !important;
+                }
+            </style>
+        </t>
+    </template>
+
+    <!-- Template: Reporte de usuarios -->
+    <template id="reporte_usuarios" name="Reporte de Usuarios">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <h1>Reporte de Usuarios</h1>
+                <p class="lead">Lista completa de usuarios del sistema</p>
+
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card text-white bg-primary">
+                            <div class="card-body text-center">
+                                <h4 class="card-title"><t t-esc="total_usuarios"/></h4>
+                                <p class="card-text">Total Usuarios</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-white bg-success">
+                            <div class="card-body text-center">
+                                <h4 class="card-title"><t t-esc="usuarios_activos"/></h4>
+                                <p class="card-text">Usuarios Activos</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-white bg-warning">
+                            <div class="card-body text-center">
+                                <h4 class="card-title"><t t-esc="usuarios_inactivos"/></h4>
+                                <p class="card-text">Usuarios Inactivos</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Usuarios Registrados</h5>
+                        <small class="text-muted">Generado el: <t t-esc="fecha_reporte"/></small>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="width: 60px;">Foto</th>
+                                    <th>Nombre</th>
+                                    <th>Email</th>
+                                    <th>Teléfono</th>
+                                    <th>Fecha Registro</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="usuarios" t-as="usuario">
+                                    <td>
+                                        <t t-if="usuario.foto">
+                                            <img t-att-src="'data:image/png;base64,' + usuario.foto" 
+                                                 style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #dee2e6;"
+                                                 class="user-avatar"/>
+                                        </t>
+                                        <t t-else="">
+                                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #6c757d; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px;">
+                                                <i class="fa fa-user"></i>
+                                            </div>
+                                        </t>
+                                    </td>
+                                    <td><t t-esc="usuario.nombre"/></td>
+                                    <td><t t-esc="usuario.email"/></td>
+                                    <td><t t-esc="usuario.telefono or 'N/A'"/></td>
+                                    <td><t t-esc="usuario.fecha_registro"/></td>
+                                    <td>
+                                        <t t-if="usuario.activo">
+                                            <span class="badge bg-success">Activo</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="badge bg-warning">Inactivo</span>
+                                        </t>
+                                    </td>
+                                </tr>
+                                <tr t-if="not usuarios">
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        <i class="fa fa-users fa-3x mb-3"></i>
+                                        <br/>
+                                        No hay usuarios registrados en el sistema
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="/usuarios" class="btn btn-primary">
+                        <i class="fa fa-arrow-left"></i> Volver al CRUD
+                    </a>
+                    <button type="button" class="btn btn-success" onclick="window.print()">
+                        <i class="fa fa-print"></i> Imprimir Reporte
+                    </button>
+                </div>
+            </div>
+
+            <style>
+                @media print {
+                    .btn, .card-header .text-muted {
+                        display: none !important;
+                    }
+                    .card {
+                        border: none !important;
+                        box-shadow: none !important;
+                    }
+                    .badge {
+                        border: 1px solid #000 !important;
+                        color: #000 !important;
+                        background: transparent !important;
+                    }
+                }
+            </style>
+        </t>
+    </template>
+</odoo>

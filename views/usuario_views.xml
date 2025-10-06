@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_usuario_tree" model="ir.ui.view">
+        <field name="name">crud.usuario.tree</field>
+        <field name="model">crud.usuario</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="foto" widget="image" class="oe_avatar"/>
+                <field name="nombre"/>
+                <field name="email"/>
+                <field name="telefono"/>
+                <field name="fecha_registro"/>
+                <field name="activo"/>
+                <button name="unlink" type="object" string="Eliminar" class="btn-danger" 
+                        confirm="¿Está seguro de que desea eliminar este usuario?"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_usuario_form" model="ir.ui.view">
+        <field name="name">crud.usuario.form</field>
+        <field name="model">crud.usuario</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_obtener_password_temporal" type="object" string="Obtener Contraseña Temporal" class="btn-info"/>
+                    <button name="action_restablecer_password" type="object" string="Restablecer Contraseña" class="btn-warning"/>
+                    <button name="action_cambiar_password_wizard" type="object" string="Cambiar Mi Contraseña" class="btn-primary"/>
+                    <button name="unlink" type="object" string="Eliminar Usuario" class="btn-danger" 
+                            confirm="¿Está seguro de que desea eliminar este usuario?"/>
+                    <field name="activo" widget="boolean_button" options='{"terminology": "active"}'/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="foto" widget="image" class="oe_avatar"/>
+                        </group>
+                        <group>
+                            <field name="nombre" required="1"/>
+                            <field name="email" required="1"/>
+                            <field name="telefono" required="1"/>
+                            <field name="fecha_registro" readonly="1"/>
+                            <field name="activo"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group colspan="2">
+                            <field name="direccion" widget="textarea" nolabel="1" placeholder="Dirección completa del usuario" required="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Información de Usuario Odoo">
+                        <group>
+                            <field name="odoo_user_id" readonly="1"/>
+                            <field name="password_cifrada" readonly="1" password="True" string="Contraseña Cifrada"/>
+                            <field name="password_temporal" readonly="1" string="Contraseña Temporal" 
+                                   invisible="not password_temporal"
+                                   help="Contraseña temporal generada (solo visible una vez después de generarla)"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vista para el wizard de cambiar contraseña -->
+    <record id="view_cambiar_password_wizard_form" model="ir.ui.view">
+        <field name="name">cambiar.password.wizard.form</field>
+        <field name="model">cambiar.password.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Cambiar Contraseña">
+                <group>
+                    <group>
+                        <field name="usuario_id" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="nueva_password" required="1" password="True" string="Nueva Contraseña"/>
+                        <field name="confirmar_password" required="1" password="True" string="Confirmar Contraseña"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_cambiar_password" type="object" string="Cambiar Contraseña" class="btn-primary"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_usuario" model="ir.actions.act_window">
+        <field name="name">CRUD Usuarios</field>
+        <field name="res_model">crud.usuario</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+    </record>
+
+    <menuitem id="menu_principal" name="CRUD Usuarios" sequence="10"/>
+    <menuitem id="menu_usuarios" name="Gestión de Usuarios" parent="menu_principal" action="action_usuario" sequence="10"/>
+</odoo>

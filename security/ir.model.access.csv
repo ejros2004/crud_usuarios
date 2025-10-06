@@ -1,4 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_crud_usuario_user,crud.usuario.user,model_crud_usuario,base.group_user,1,1,1,1
 access_crud_usuario_public,crud.usuario.public,model_crud_usuario,base.group_public,1,0,0,0
-access_cambiar_password_wizard_user,cambiar.password.wizard.user,model_cambiar_password_wizard,base.group_user,1,1,1,0
+access_cambiar_password_wizard_public,cambiar.password.wizard.public,model_cambiar_password_wizard,base.group_public,1,1,1,0

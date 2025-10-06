@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     
+    <!-- Template: Página Principal del CRUD -->
     <template id="pagina_principal" name="Página Principal - CRUD Usuarios">
         <t t-call="website.layout">
             <div class="container mt-4">
                 <h1>Gestión de Usuarios</h1>
                 <p class="lead">Sistema CRUD completo para administrar usuarios</p>
 
+                <!-- Barra de herramientas -->
                 <div class="mb-4">
                     <a href="/reporte_usuarios" class="btn btn-info">Ver Reporte</a>
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCrearUsuario">
@@ -14,6 +16,7 @@
                     </button>
                 </div>
 
+                <!-- Lista de usuarios -->
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title mb-0">Lista de Usuarios Registrados</h5>
@@ -136,7 +139,7 @@
                     </div>
                 </div>
             </div>
-
+            <!-- Funcion para confirmar eliminación de usuario -->
             <script>
                 function confirmarEliminacion(boton) {
                     const usuarioId = boton.getAttribute('data-usuario-id');
@@ -268,6 +271,7 @@
                 <h1>Reporte de Usuarios</h1>
                 <p class="lead">Lista completa de usuarios del sistema</p>
 
+                <!-- Tarjetas de estadísticas -->
                 <div class="row mb-4">
                     <div class="col-md-4">
                         <div class="card text-white bg-primary">
@@ -295,6 +299,7 @@
                     </div>
                 </div>
 
+                <!-- Tabla de reporte -->
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title mb-0">Usuarios Registrados</h5>

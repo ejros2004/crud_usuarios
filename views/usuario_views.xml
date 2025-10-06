@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Vista Tree (Lista) de Usuarios -->
     <record id="view_usuario_tree" model="ir.ui.view">
         <field name="name">crud.usuario.tree</field>
         <field name="model">crud.usuario</field>
@@ -17,6 +18,7 @@
         </field>
     </record>
 
+    <!-- Vista Form (Formulario) de Usuario -->
     <record id="view_usuario_form" model="ir.ui.view">
         <field name="name">crud.usuario.form</field>
         <field name="model">crud.usuario</field>
@@ -87,6 +89,7 @@
         </field>
     </record>
 
+    <!-- Acción de ventana para el CRUD de usuarios -->
     <record id="action_usuario" model="ir.actions.act_window">
         <field name="name">CRUD Usuarios</field>
         <field name="res_model">crud.usuario</field>
@@ -94,6 +97,7 @@
         <field name="domain">[]</field>
     </record>
 
+    <!-- Estructura de menús -->
     <menuitem id="menu_principal" name="CRUD Usuarios" sequence="10"/>
     <menuitem id="menu_usuarios" name="Gestión de Usuarios" parent="menu_principal" action="action_usuario" sequence="10"/>
 </odoo>

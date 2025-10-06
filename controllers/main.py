@@ -7,6 +7,7 @@ class UsuarioController(http.Controller):
     
     @http.route('/usuarios', type='http', auth='public', website=True)
     def pagina_usuarios(self, **kwargs):
+        """Página principal que muestra la lista de usuarios"""
         usuarios = request.env['crud.usuario'].sudo().search([])
         return request.render('crud_usuarios.pagina_principal', {
             'usuarios': usuarios,
@@ -15,12 +16,15 @@ class UsuarioController(http.Controller):
     
     @http.route('/crear_usuario', type='http', auth='public', methods=['POST'], website=True, csrf=False)
     def crear_usuario(self, **post):
+        """Crear un nuevo usuario desde el formulario web"""
         try:
+            # Validar campos obligatorios
             campos_obligatorios = ['nombre', 'email', 'telefono', 'direccion']
             for campo in campos_obligatorios:
                 if not post.get(campo):
                     return request.redirect('/usuarios')
             
+            # Preparar valores para crear el usuario
             vals = {
                 'nombre': post.get('nombre'),
                 'email': post.get('email'),
@@ -29,7 +33,7 @@ class UsuarioController(http.Controller):
                 'activo': True,
             }
             
-            # Manejar la foto
+            # Manejar la foto si se subió
             foto_file = post.get('foto')
             if foto_file and hasattr(foto_file, 'filename') and foto_file.filename:
                 try:
@@ -39,6 +43,7 @@ class UsuarioController(http.Controller):
                 except Exception:
                     pass
             
+            # Crear el usuario
             request.env['crud.usuario'].sudo().create(vals)
             
         except Exception:
@@ -48,18 +53,22 @@ class UsuarioController(http.Controller):
     
     @http.route('/editar_usuario/<model("crud.usuario"):usuario>', type='http', auth='public', website=True)
     def editar_usuario_form(self, usuario, **kwargs):
+        """Mostrar formulario de edición de usuario"""
         return request.render('crud_usuarios.formulario_edicion', {
             'usuario': usuario
         })
     
     @http.route('/actualizar_usuario/<model("crud.usuario"):usuario>', type='http', auth='public', methods=['POST'], website=True, csrf=False)
     def actualizar_usuario(self, usuario, **post):
+        """Actualizar un usuario existente"""
         try:
+            # Validar campos obligatorios
             campos_obligatorios = ['nombre', 'email', 'telefono', 'direccion']
             for campo in campos_obligatorios:
                 if not post.get(campo):
                     return request.redirect('/usuarios')
             
+            # Preparar valores para actualizar
             vals = {
                 'nombre': post.get('nombre'),
                 'email': post.get('email'),
@@ -80,6 +89,7 @@ class UsuarioController(http.Controller):
             elif post.get('eliminar_foto'):
                 vals['foto'] = False
             
+            # Actualizar el usuario
             usuario.sudo().write(vals)
                 
         except Exception:
@@ -89,13 +99,16 @@ class UsuarioController(http.Controller):
     
     @http.route('/eliminar_usuario/<model("crud.usuario"):usuario>', type='http', auth='public', website=True, csrf=False)
     def eliminar_usuario(self, usuario):
+        """Eliminar un usuario"""
         usuario.sudo().unlink()
         return request.redirect('/usuarios')
     
     @http.route('/reporte_usuarios', type='http', auth='public', website=True)
     def reporte_usuarios(self):
+        """Generar reporte de usuarios con estadísticas"""
         usuarios = request.env['crud.usuario'].sudo().search([])
         
+        # Calcular estadísticas
         total_usuarios = len(usuarios)
         usuarios_activos = len([u for u in usuarios if u.activo])
         usuarios_inactivos = len([u for u in usuarios if not u.activo])

@@ -12,6 +12,7 @@ class CRUDUsuario(models.Model):
     _description = 'Usuario del Sistema CRUD'
     _order = 'fecha_registro desc'
     
+    # Campos básicos del usuario
     nombre = fields.Char(string='Nombre Completo', required=True)
     email = fields.Char(string='Email', required=True)
     telefono = fields.Char(string='Teléfono', required=True, size=15)

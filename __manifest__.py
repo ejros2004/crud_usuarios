@@ -3,17 +3,14 @@
     'version': '17.0.1.0.0',
     'category': 'Tools',
     'summary': 'Sistema completo CRUD para gestión de usuarios con interfaz web',
-    'description': """
-        Módulo para gestión completa de usuarios con operaciones CRUD
-        =============================================================
-
-        Características:
-        * Crear, leer, actualizar y eliminar usuarios
-        * Subida de fotos de perfil
-        * Interfaz web responsive
-        * Reportes de usuarios
-        * Gestión de estados (activo/inactivo)
-    """,
+    'description': '''
+        Módulo para gestión completa de usuarios con:
+        - CRUD de usuarios
+        - Sincronización con usuarios Odoo
+        - Gestión de contraseñas
+        - Interfaz web pública
+        - Reportes y estadísticas
+    ''',
     'author': 'Emilio',
     'website': 'http://localhost:8069/web',
     'license': 'LGPL-3',
